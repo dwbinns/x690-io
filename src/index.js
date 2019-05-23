@@ -85,7 +85,7 @@ class X690Type {
     }
     toString() {
         let tagName=this.tag;
-        if (this.tagClass === 0) tagName = universalTagNames.get(this.tag);
+        if (this.tagClass === 0) tagName = tagName+' ('+universalTagNames.get(this.tag)+')';
         return `${['UNIVERSAL','APPLICATION','CONTEXT','PRIVATE'][this.tagClass]} ${tagName} ${this.structured}`;
     }
     static universal(code, structured = false) {
@@ -366,13 +366,13 @@ const auto=new class extends Encoding {
         if (type.structured) {
             content=sequenceOf(auto).content;
         } else {
-            let option = autoOptions.find(option=>option.type.equals(type));
-            if (!option) throw new UnexpectedTypeError(`Found: ${type} expected: ${autoOptions.map(o=>o.type).join(",")}`);
+            let option = autoOptions.find(option=>option.type.equals(type)) || octetString;
+            //if (!option) throw new UnexpectedTypeError(`Found: ${type} expected: ${autoOptions.map(o=>o.type).join(",")}`);
             content=option.content;
             contentEncoding=option.contentEncoding;
         }
         let value=content.read(bufferReader, context);
-        let end = bufferReader.index
+        let end = bufferReader.index;
         return {type, value, start, end, contentEncoding};
     }
     write(bufferWriter, context, value) {
@@ -437,9 +437,13 @@ x690-io pem file.pem
 `;
 
 function main(inputFormat, inputFile, outputFormat) {
-    if (inputFormat=='pem') {
+    if (inputFormat=='hex') {
+        let data=Buffer.from(fs.readFileSync(inputFile).toString("ascii"),'hex');
+        console.log(data.toString("hex"));
+        console.log(explain(data, read(data, null, auto)));
+    }
+    else if (inputFormat=='pem') {
         let data=new Buffer(fs.readFileSync(inputFile).toString('ascii').replace(/-----.*-----/g,''),'base64');
-        //console.log(toHex(data,'\n'));
         console.log(explain(data, read(data, null, auto)));
     } else {
         console.log(USAGE);
@@ -451,4 +455,4 @@ if (require.main === module) {
 }
 
 
-module.exports={main, sequence, sequenceOf, setOf, optional, boolean, explicit, integer, bitString, octetString, anyString, integerBytes, integerAuto, integer, oid};
+module.exports={main, sequence, sequenceOf, setOf, optional, boolean, explicit, integer, bitString, octetString, anyString, integerBytes, integerAuto, integer, oid, auto};

@@ -18,6 +18,6 @@
   "repository": "github:dwbinns/x690-io",
   "dependencies": {
     "buffer-io": "^1.1.0",
-    "structured-io": "^1.0.0"
+    "structured-io": "^2.0.0"
   }
 }
