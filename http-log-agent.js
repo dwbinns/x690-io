@@ -8,7 +8,7 @@ let agent = new class extends https.Agent {
 	 let connection = super.createConnection(options, callback);
 	 connection.on('secureConnect', ()=>{
 		 if (process.env.SSLKEYLOGFILE) {
-			 let sessionDecoded = read(connection.getSession(), null, x690.auto).value;
+			 let sessionDecoded = read(connection.getSession(), x690.auto).value;
 			 let logline = 'RSA Session-ID:' + sessionDecoded[3].value.toString("hex") + ' Master-Key:' + sessionDecoded[4].value.toString("hex") + '\n';
 			 //let logline = `CLIENT_RANDOM ${sessionDecoded[3].value.toString("hex")} ${sessionDecoded[4].value.toString("hex")}\n`;
 			 appendFileSync(process.env.SSLKEYLOGFILE, logline);
