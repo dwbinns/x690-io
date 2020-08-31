@@ -22,7 +22,7 @@ const universalTagNames = new Map([
 ]);
 
 
-class X690typeEncoding extends AnnotatedValue {
+class X690typeEncoding extends Encoding {
 
     // https://www.itu.int/ITU-T/studygroups/com17/languages/X.690-0207.pdf#page=12
     read(bufferReader) {

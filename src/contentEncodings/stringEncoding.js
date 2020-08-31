@@ -1,7 +1,7 @@
 const { asBuffer } = require('buffer-io');
-const { Encoding, annotate } = require('structured-io');
+const { AnnotatedValue } = require('structured-io');
 
-class STRING extends Encoding {
+class STRING extends AnnotatedValue {
     can(value) {
         return typeof value == "string";
     }

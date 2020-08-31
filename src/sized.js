@@ -41,7 +41,7 @@ module.exports = contentEncoding =>
             nestedReader.setSize(totalSize);
             let result = contentEncoding.read(nestedReader, value);
 
-            if (nestedReader.getReadSize() != totalSize) throw new Error("Read underflow");
+            if (nestedReader.getReadSize() != totalSize) throw new Error(`Read underflow ${nestedReader.getReadSize()} != ${totalSize}`);
 
             bufferReader.eat(totalSize);
 

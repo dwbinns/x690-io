@@ -1,26 +1,33 @@
 const { Encoding } = require('structured-io');
+const X690Type = require('../X690Type');
 const UnexpectedTypeError = require('../UnexpectedTypeError');
 
 
-function choice(...options) {
-    return new class extends Encoding {
-        read(bufferReader, value) {
-            for (let option of options) {
-                try {
-                    return option.read(bufferReader, value);
-                } catch (e) {
-                    if (!(e instanceof UnexpectedTypeError))
-                        throw e;
-                }
+class Choice extends Encoding {
+    constructor(options) {
+        super();
+        this.options = options;
+        options.forEach(Encoding.check);
+        options.forEach(({contentEncoding}) => Encoding.check(contentEncoding));
+    }
+    read(bufferReader, value) {
+        for (let option of this.options) {
+            try {
+                return bufferReader.nest(reader => option.read(reader, value));
+            } catch (e) {
+                if (!(e instanceof UnexpectedTypeError))
+                    throw e;
             }
+        }
+        let type = X690Type.encoding.read(bufferReader);
+        throw new UnexpectedTypeError(`No option found for type: ${type}`);
+    }
+    write(bufferWriter, value) {
+        let option = this.options.find(option => option.contentEncoding.can(value));
+        if (!option)
             throw new UnexpectedTypeError(`No option found`);
-        }
-        write(bufferWriter, value) {
-            let option = options.find(option => option.contentEncoding.can(value));
-            if (!option)
-                throw new UnexpectedTypeError(`No option found`);
-            option.write(bufferWriter, value);
-        }
-    };
+        option.write(bufferWriter, value);
+    }
 }
-module.exports = choice;
+
+module.exports = (...options) => new Choice(options);

@@ -6,6 +6,10 @@ class OID {
         this.name = name;
     }
 
+    equals(other) {
+        return other.id == this.id;
+    }
+
     toString() {
         return `${this.id}: ${this.name}`;
     }

@@ -7,7 +7,7 @@ const {promises: {readFile}} = require("fs");
 const OID = require("./OID");
 const X690Type = require("./X690Type");
 const {explain, read} = require('structured-io');
-const any = require('./asn1types/any');
+const any = require('./asn1types/X690Element');
 
 
 const USAGE = `

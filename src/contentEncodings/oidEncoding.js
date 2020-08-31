@@ -1,13 +1,12 @@
-const {Annotated, Encoding, annotate} = require("structured-io");
+const {AnnotatedValue} = require("structured-io");
 
 const OID = require("../OID");
 const variableWidthNumber = require("./variableWidthNumber");
 
-class OIDEncoding extends Annotated {
-    explain(value) {
-        return value;
+class OIDEncoding extends AnnotatedValue {
+    can(value) {
+        return value instanceof OID;
     }
-
     read(bufferReader) {
         let components = [];
         while (!bufferReader.eof()) {
