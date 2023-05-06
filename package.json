@@ -1,6 +1,6 @@
 {
   "name": "x690-io",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "JavaScript x690 decoder",
   "exports": "./src/index.js",
   "scripts": {
@@ -16,5 +16,7 @@
     "structured-io": "^4.0.0"
   },
   "bin": "cli.js",
-  "workspaces": ["deps/*"]
+  "workspaces": [
+    "deps/*"
+  ]
 }
