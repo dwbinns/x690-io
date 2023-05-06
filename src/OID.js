@@ -1,4 +1,4 @@
-const oids = require("./oids");
+import oids from './oids.js';
 
 class OID {
     constructor(id, name = oids.toName(id)) {
@@ -14,4 +14,4 @@ class OID {
         return `${this.id}: ${this.name}`;
     }
 }
-module.exports = OID;
+export default OID;

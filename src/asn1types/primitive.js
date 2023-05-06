@@ -1,15 +1,14 @@
-const {bytes} = require("structured-io");
-const bitStringEncoding = require("../contentEncodings/bitStringEncoding");
-const booleanEncoding = require("../contentEncodings/booleanEncoding");
-const dateEncoding = require("../contentEncodings/dateEncoding");
-const nullEncoding = require("../contentEncodings/nullEncoding");
-const numberBigIntEncoding = require("../contentEncodings/numberBigIntEncoding");
-const numberEncoding = require("../contentEncodings/numberEncoding");
-const oidEncoding = require("../contentEncodings/oidEncoding");
-const stringEncoding = require("../contentEncodings/stringEncoding");
-
-const X690Type = require("../X690Type");
-const typed = require("./typed");
+import { bytes } from 'structured-io';
+import bitStringEncoding from '../contentEncodings/bitStringEncoding.js';
+import booleanEncoding from '../contentEncodings/booleanEncoding.js';
+import dateEncoding from '../contentEncodings/dateEncoding.js';
+import nullEncoding from '../contentEncodings/nullEncoding.js';
+import numberBigIntEncoding from '../contentEncodings/numberBigIntEncoding.js';
+import numberEncoding from '../contentEncodings/numberEncoding.js';
+import oidEncoding from '../contentEncodings/oidEncoding.js';
+import stringEncoding from '../contentEncodings/stringEncoding.js';
+import X690Type from '../X690Type.js';
+import typed from './typed.js';
 
 const boolean = typed(X690Type.universal(1), booleanEncoding());
 const integer = typed(X690Type.universal(2), numberEncoding());
@@ -24,4 +23,4 @@ const ia5String = typed(X690Type.universal(20), stringEncoding('ascii'));
 const t61String = typed(X690Type.universal(22), stringEncoding('ascii'));
 const utcTime = typed(X690Type.universal(23), dateEncoding());
 
-module.exports = {boolean, integer, bigint, bitString, octetString, nullData, oid, utf8string, printableString, ia5String, t61String, utcTime};
+export {boolean, integer, bigint, bitString, octetString, nullData, oid, utf8string, printableString, ia5String, t61String, utcTime};

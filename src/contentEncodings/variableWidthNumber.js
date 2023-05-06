@@ -1,4 +1,4 @@
-const {Encoding} = require("structured-io");
+import { Encoding } from 'structured-io';
 
 function integerSplit7(integer) {
     let bytes = [];
@@ -11,7 +11,7 @@ function integerSplit7(integer) {
 
 
 
-module.exports = new class extends Encoding {
+export default new (class extends Encoding {
     read(bufferReader, value) {
         value = 0;
         while (true) {
@@ -25,4 +25,4 @@ module.exports = new class extends Encoding {
     write(bufferWriter, value) {
         integerSplit7(value).forEach(v => bufferWriter.writeU8(v));
     }
-};
+});

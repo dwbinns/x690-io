@@ -1,6 +1,6 @@
-const { Encoding } = require('structured-io');
-const X690Type = require('../X690Type');
-const UnexpectedTypeError = require('../UnexpectedTypeError');
+import { Encoding } from 'structured-io';
+import X690Type from '../X690Type.js';
+import UnexpectedTypeError from '../UnexpectedTypeError.js';
 
 
 class Choice extends Encoding {
@@ -30,4 +30,4 @@ class Choice extends Encoding {
     }
 }
 
-module.exports = (...options) => new Choice(options);
+export default (...options) => new Choice(options);

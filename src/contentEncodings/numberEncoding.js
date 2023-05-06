@@ -1,5 +1,5 @@
-const { Encoding } = require('structured-io');
-const integerSplit8 = require('../integerSplit8');
+import { Encoding } from 'structured-io';
+import integerSplit8 from '../integerSplit8.js';
 
 
 
@@ -14,6 +14,6 @@ class NUMBER extends Encoding {
     write(bufferWriter, value) {
         integerSplit8(value).forEach(b => bufferWriter.writeU8(b));
     }
-};
+}
 
-module.exports = () => new NUMBER();
+export default () => new NUMBER();

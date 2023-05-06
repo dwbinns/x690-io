@@ -1,8 +1,8 @@
-const { write, annotate, Encoding, AnnotatedValue } = require("structured-io");
-const integerSplit8 = require("./integerSplit8");
+import { AnnotatedValue, Encoding, write } from 'structured-io';
+import integerSplit8 from './integerSplit8.js';
 
 
-const x690sizeEncoding = new class X690Size extends AnnotatedValue {
+const x690sizeEncoding = new (class X690Size extends AnnotatedValue {
     read(bufferReader, value) {
         let length = bufferReader.readU8();
         if (length == 0x80) {
@@ -28,11 +28,11 @@ const x690sizeEncoding = new class X690Size extends AnnotatedValue {
             sizeBytes.forEach(b => bufferWriter.writeU8(b));
         }
     }
-};
+});
 
 
-module.exports = contentEncoding =>
-    new class extends Encoding {
+export default contentEncoding =>
+    new (class extends Encoding {
         read(bufferReader, value) {
             let nestedReader = bufferReader.here();
 
@@ -52,6 +52,6 @@ module.exports = contentEncoding =>
             x690sizeEncoding.write(bufferWriter, content.length);
             bufferWriter.writeBytes(content);
         }
-    };
+    });
 
 

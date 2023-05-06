@@ -1,6 +1,6 @@
-const { asBuffer } = require('buffer-io');
-const { Annotated } = require('structured-io');
-const integerSplit8 = require('../integerSplit8');
+import { asBuffer } from 'buffer-io';
+import { Annotated } from 'structured-io';
+import integerSplit8 from '../integerSplit8.js';
 
 const dd = number => number.toString().padStart(2, '0');
 
@@ -32,6 +32,6 @@ class DateEncoding extends Annotated {
             + "Z";
         bufferWriter.writeBytes(Buffer.from(dateString));
     }
-};
+}
 
-module.exports = () => new DateEncoding();
+export default () => new DateEncoding();

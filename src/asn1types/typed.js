@@ -1,11 +1,11 @@
-const {Annotated} = require("structured-io");
-const X690Type = require('../X690Type');
-const sized = require("../sized");
-const UnexpectedTypeError = require("../UnexpectedTypeError");
+import { Annotated } from 'structured-io';
+import X690Type from '../X690Type.js';
+import sized from '../sized.js';
+import UnexpectedTypeError from '../UnexpectedTypeError.js';
 
 
-module.exports = (type, contentEncoding, defaultValue) =>
-    new class extends Annotated {
+export default (type, contentEncoding, defaultValue) =>
+    new (class extends Annotated {
         constructor() {
             super(type.toString());
         }
@@ -30,4 +30,4 @@ module.exports = (type, contentEncoding, defaultValue) =>
             sized(contentEncoding).write(bufferWriter, value);
         }
 
-    };
+    });

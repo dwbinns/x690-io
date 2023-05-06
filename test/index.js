@@ -1,9 +1,7 @@
 Error.stackTraceLimit = Infinity;
 
-const {any, Pem} = require("..");
-const assert = require('assert').strict;
-
-
+import { any, Pem } from 'x690-io';
+import { strict as assert } from 'assert';
 
 
 let exampleCSR = `

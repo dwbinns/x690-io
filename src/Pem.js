@@ -1,5 +1,5 @@
-const {read, write, explain, instance} = require('structured-io');
-const { any } = require('./asn1types');
+import { read, write, explain, instance } from 'structured-io';
+import { any } from './asn1types/index.js';
 
 
 
@@ -54,7 +54,7 @@ class Section {
 
 }
 
-module.exports = class Pem {
+export default class Pem {
 
     static Section = Section;
 
@@ -97,4 +97,4 @@ module.exports = class Pem {
     explain() {
         this.sections.forEach(section => section.explain());
     }
-}
+};

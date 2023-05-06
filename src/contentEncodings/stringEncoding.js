@@ -1,5 +1,5 @@
-const { asBuffer } = require('buffer-io');
-const { AnnotatedValue } = require('structured-io');
+import { asBuffer } from 'buffer-io';
+import { AnnotatedValue } from 'structured-io';
 
 class STRING extends AnnotatedValue {
     can(value) {
@@ -13,4 +13,4 @@ class STRING extends AnnotatedValue {
     }
 }
 
-module.exports = encodingName => new STRING(encodingName);
+export default encodingName => new STRING(encodingName);

@@ -1,6 +1,6 @@
-const { write, annotate, Encoding } = require('structured-io');
-const UnexpectedTypeError = require('./UnexpectedTypeError');
-const X690Type = require('./X690Type');
+import { write, annotate, Encoding } from 'structured-io';
+import UnexpectedTypeError from './UnexpectedTypeError.js';
+import X690Type from './X690Type.js';
 
 
 
@@ -40,7 +40,7 @@ const X690Type = require('./X690Type');
 function x690(type, contentEncoding, defaultValue) {
     Encoding.check(contentEncoding);
     let content = sized(contentEncoding);
-    return new class extends Encoding {
+    return new (class extends Encoding {
 
         constructor() {
             super();
@@ -73,7 +73,7 @@ function x690(type, contentEncoding, defaultValue) {
 
             return this.content.write(bufferWriter, value);
         }
-    };
+    });
 }
 
-module.exports = x690;
+export default x690;

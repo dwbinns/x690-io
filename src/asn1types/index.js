@@ -1,14 +1,9 @@
-const structuredIO = require("structured-io");
-
-const X690Type = require('../X690Type');
-const choice = require('./choice');
-const X690Element = require('./X690Element');
-
-const constructed = require("./constructed");
-const primitive = require("./primitive");
-const typed = require("./typed");
-
-const {utf8string, printableString, ia5String, t61String} = primitive;
+import * as structuredIO from 'structured-io';
+import X690Type from '../X690Type.js';
+import choice from './choice.js';
+import X690Element from './X690Element.js';
+import {utf8string, printableString, ia5String, t61String} from './primitive.js';
+import typed from './typed.js';
 
 const anyString = choice(utf8string, printableString, ia5String, t61String);
 const any = structuredIO.instance(X690Element);
@@ -18,9 +13,11 @@ const explicit = (typeCode, base, defaultValue) => typed(X690Type.context(typeCo
 const implicit = (typeCode, base) => typed(base.type.makeContext(typeCode), base.contentEncoding);
 
 
-module.exports = {
-    ...primitive,
-    ...constructed,
+export * from './constructed.js';
+export * from './primitive.js';
+
+
+export {
 
     anyString,
     any,

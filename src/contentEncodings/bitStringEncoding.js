@@ -1,6 +1,6 @@
-const {Encoding} = require("structured-io");
+import { Encoding } from 'structured-io';
 
-module.exports = new class extends Encoding {
+export default new (class extends Encoding {
     // assumes no partial bytes
     read(bufferReader) {
         return bufferReader.readBytes().slice(1);
@@ -9,4 +9,4 @@ module.exports = new class extends Encoding {
         bufferWriter.writeU8(0);
         bufferWriter.writeBytes(value);
     }
-};
+});

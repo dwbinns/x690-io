@@ -1,7 +1,11 @@
-const {read, bytes, instance, sequence, call, array, dynamic, field, noAnnotation} = require("structured-io");
-const sized = require("../sized");
-const X690Type = require("../X690Type");
-const {boolean, integer, bigint, bitString, octetString, nullData, oid, utf8string, printableString, ia5String, t61String, utcTime} = require("./primitive");
+import { array, bytes, dynamic, field, instance, read, sequence } from 'structured-io';
+import sized from '../sized.js';
+import X690Type from '../X690Type.js';
+
+import {
+    bigint, boolean, ia5String, integer, oid, printableString, t61String,
+    utcTime, utf8string
+} from './primitive.js';
 
 
 
@@ -35,6 +39,6 @@ class X690Element {
             )
         ),
     );
-};
+}
 
-module.exports = X690Element;
+export default X690Element;

@@ -1,7 +1,6 @@
-const {AnnotatedValue} = require("structured-io");
-
-const OID = require("../OID");
-const variableWidthNumber = require("./variableWidthNumber");
+import { AnnotatedValue } from 'structured-io';
+import OID from '../OID.js';
+import variableWidthNumber from './variableWidthNumber.js';
 
 class OIDEncoding extends AnnotatedValue {
     can(value) {
@@ -27,9 +26,9 @@ class OIDEncoding extends AnnotatedValue {
 
         components.forEach(v => variableWidthNumber.write(bufferWriter, v));
     }
-};
+}
 
-module.exports = () => new OIDEncoding();
+export default () => new OIDEncoding();
 
 
 // const oidNameEncoding = new class extends Encoding {

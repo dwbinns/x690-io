@@ -1,6 +1,6 @@
-const {Encoding} = require("structured-io");
+import { Encoding } from 'structured-io';
 
-module.exports = new class NULL extends Encoding {
+export default new class NULL extends Encoding {
     can(value) {
         return value == null;
     }

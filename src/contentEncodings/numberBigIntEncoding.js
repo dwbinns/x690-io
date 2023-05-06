@@ -1,4 +1,4 @@
-const { Encoding } = require('structured-io');
+import { Encoding } from 'structured-io';
 
 function bigintSplit8(integer) {
     let bytes = [];
@@ -10,7 +10,7 @@ function bigintSplit8(integer) {
 }
 
 
-module.exports = new class NUMBER extends Encoding {
+export default new (class NUMBER extends Encoding {
     read(bufferReader, value) {
         return [...bufferReader.readBytes()]
             .reduce(
@@ -21,4 +21,4 @@ module.exports = new class NUMBER extends Encoding {
     write(bufferWriter, value) {
         bigintSplit8(value).forEach(b => bufferWriter.writeU8(b));
     }
-};
+});

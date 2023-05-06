@@ -1762,7 +1762,7 @@ for (let line of objects.split("\n")) {
     }
 }
 
-module.exports = {
+export default {
     toName: oid => oidToName.get(oid),
     toOID: name => nameToOID.get(name)
-}
+};

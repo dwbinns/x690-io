@@ -1,1 +1,1 @@
-module.exports = class UnexpectedTypeError extends Error { };
+export default class UnexpectedTypeError extends Error { };

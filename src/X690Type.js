@@ -1,4 +1,4 @@
-const { AnnotatedValue, Encoding, annotate } = require("structured-io");
+import { Encoding } from 'structured-io';
 
 
 const tagClasses = ['UNIVERSAL', 'APPLICATION', 'CONTEXT', 'PRIVATE'];
@@ -77,6 +77,6 @@ class X690Type {
     }
 
     static encoding = new X690typeEncoding();
-};
+}
 
-module.exports = X690Type;
+export default X690Type;
