@@ -1,6 +1,6 @@
 {
   "name": "x690-io",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "description": "JavaScript x690 decoder",
   "exports": "./src/index.js",
   "scripts": {
