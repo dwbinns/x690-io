@@ -1,23 +1,26 @@
 #!/usr/bin/env node
-import { Pem, any } from 'x690-io';
-import { explain } from 'structured-io';
-import { readFile} from "node:fs/promises";
+import { readFile } from "node:fs/promises";
+import { DataValue, Pem } from 'x690-io';
+import tree from './src/tree.js';
+import { BufferReader } from "buffer-io";
 
 const USAGE = `
 x690-io pem file.pem
 `;
 
 async function main(inputFormat, input, outputFormat) {
+
     if (inputFormat == 'hex') {
-        let data = Buffer.from(input.replace(/:/g, ""), "hex");
-        console.log(data);
-        // let data=Buffer.from(await readFile(inputFile, {encoding: 'utf8'}), 'hex');
-        // console.log(data.toString("hex"));
-        explain(data, any);
-        //console.log(JSON.stringify(read(data, any), null, 4));
-    }
-    else if (inputFormat == 'pem') {
-        Pem.read(await readFile(input, { encoding: 'utf8' })).explain();
+        let data = Buffer.from(input.replace(/[^A-Fa-f0-9]/g, ""), "hex");
+        let content = DataValue.read(new BufferReader(data))
+        console.log(tree(content));
+    } else if (inputFormat == 'pem') {
+        let pem = Pem.read(await readFile(input, { encoding: 'utf8' }));
+        if (outputFormat == "annotate") {
+            pem.explain();
+        } else {
+            console.log(tree(pem));
+        }
     } else {
         console.log(USAGE);
     }

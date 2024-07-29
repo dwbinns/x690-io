@@ -1,5 +1,4 @@
-import { Encoding } from 'structured-io';
-
+import * as variableWidthNumber from "./variableWidthNumber.js";
 
 const tagClasses = ['UNIVERSAL', 'APPLICATION', 'CONTEXT', 'PRIVATE'];
 
@@ -21,30 +20,6 @@ const universalTagNames = new Map([
     [23, "UTCTime"],
 ]);
 
-
-class X690typeEncoding extends Encoding {
-
-    // https://www.itu.int/ITU-T/studygroups/com17/languages/X.690-0207.pdf#page=12
-    read(bufferReader) {
-
-        let identifier = bufferReader.readU8();
-        let tag = identifier & 0x1f;
-        if (tag == 31) {
-            tag = variableWidthNumber.read(bufferReader);
-        }
-        let type = new X690Type(identifier >> 6, tag, (identifier & 0x20) > 0);
-        return type;
-    }
-    write(bufferWriter, value) {
-        let identifier = (value.tagClass << 6) + (value.constructed ? 0x20 : 0) + (value.tag > 30 ? 31 : value.tag);
-
-        bufferWriter.writeU8(identifier);
-        if (value.tag > 30) {
-            variableWidthNumber.write(bufferWriter, value.tag);
-        }
-
-    }
-}
 
 
 class X690Type {
@@ -76,7 +51,29 @@ class X690Type {
         return X690Type.context(code, this.constructed);
     }
 
-    static encoding = new X690typeEncoding();
+    static read(bufferReader) {
+
+
+        let identifier = bufferReader.readU8();
+        let tag = identifier & 0x1f;
+        if (tag == 31) {
+            tag = variableWidthNumber.read(bufferReader);
+        }
+        // console.log("Read type", tag.toString(16));
+        let type = new X690Type(identifier >> 6, tag, (identifier & 0x20) > 0);
+        return type;
+
+
+    }
+
+    write(bufferWriter) {
+        let identifier = (this.tagClass << 6) + (this.constructed ? 0x20 : 0) + (this.tag > 30 ? 31 : this.tag);
+        //console.log("Write type", identifier.toString(16));
+        bufferWriter.writeU8(identifier);
+        if (this.tag > 30) {
+            variableWidthNumber.write(bufferWriter, this.tag);
+        }
+    }
 }
 
 export default X690Type;

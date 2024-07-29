@@ -1,6 +1,10 @@
-import { read, write, explain, instance } from 'structured-io';
-import { any } from './asn1types/index.js';
-
+import * as base64 from "@dwbinns/base/64";
+import { BufferReader } from 'buffer-io';
+import { DataValue } from './DataValue.js';
+import { byteSplit } from './byteFormat.js';
+import { name } from './encodings/encodings.js';
+import { instance } from "./encodings/instance.js";
+import tree from "./tree.js";
 
 
 
@@ -14,47 +18,60 @@ class Section {
         this.content = content;
     }
 
-    static encodeContent(types, value) {
-        let typeName = Array.isArray(types)
-            ? types.filter(([, type]) => type == value.constructor).map(([name]) => name).pop()
-            : types;
-        let content = write(value);
+    static encodeContent(value) {
+        let dataValue = instance(value.constructor).encode(value);
+        const typeName = value.constructor[name];
+        // let typeName = Array.isArray(types)
+        //     ? types.filter(([, type]) => type == value.constructor).map(([name]) => name).pop()
+        //     : types;
+        // let content = write(value);
 
-        return new Section(typeName, content);
+        return new Section(typeName, dataValue.getBytes());
     }
 
-    getType(types) {
-        let type = Array.isArray(types)
-        ? types.filter(([name]) => name == this.type).map(([, type]) => type).pop()
-        : types;
-        if (!type) throw new Error(`Unknown type: ${type}`);
-        return type;
+    getContent() {
+        return DataValue.read(new BufferReader(this.content));
     }
 
-    decodeContent(types) {
-        return read(this.content, this.getType(types));
+
+    // getType(types) {
+    //     let type = Array.isArray(types)
+    //     ? types.filter(([name]) => name == this.type).map(([, type]) => type).pop()
+    //     : types;
+    //     if (!type) throw new Error(`Unknown type: ${type}`);
+    //     return type;
+    // }
+
+    decodeContent(contentEncoding) {
+        return contentEncoding.decode(this.getContent());
     }
 
-    explain(types = any) {
-        console.log(this.type);
-        explain(this.content, this.getType(types));
-    }
+    // explain() {
+    //     console.log(this.type);
+    //     explain(this.content, instance(X690Element));
+    // }
 
     write() {
 
         return [
             `-----BEGIN ${this.type}-----`,
-            ...Buffer.from(this.content).toString("base64").match(/.{1,64}/g),
+            ...byteSplit(this.content, 48).map(section => base64.encode(section)),
             `-----END ${this.type}-----`,
             ''
         ].join("\n");
     }
 
 
+    getChildren() {
+        return [this.getContent()];
+    }
 
+    getDescription() {
+        return this.type;
+    }
 }
 
-export default class Pem {
+export class Pem {
 
     static Section = Section;
 
@@ -62,8 +79,14 @@ export default class Pem {
         this.sections = sections;
     }
 
-    addSection(types, value) {
-        this.sections.push(Section.encodeContent(types, value));
+    encodeSection(value) {
+        this.sections.push(Section.encodeContent(value));
+    }
+
+    addSection(name, data) {
+        //console.log("write section", name, data);
+
+        this.sections.push(new Section(name, data.getBytes()));
     }
 
     static read(text) {
@@ -73,7 +96,7 @@ export default class Pem {
         for (let line of text.split("\n")) {
             let match = /^-----(BEGIN|END) (.*)-----$/.exec(line.trim());
             if (match && match[1] == "END" && match[2] == type) {
-                let data = Buffer.from(base64Lines.join(""),'base64');
+                let data = base64.decode(base64Lines.join(""));
                 results.push(new Section(type, data));
                 base64Lines = null;
 
@@ -89,6 +112,14 @@ export default class Pem {
         return new Pem(...results);
     }
 
+    getDescription() {
+        return "input";
+    }
+
+    getChildren() {
+        return this.sections;
+    }
+
     write() {
         return this.sections.map(part => part.write()).join("");
     }
@@ -96,5 +127,9 @@ export default class Pem {
 
     explain() {
         this.sections.forEach(section => section.explain());
+    }
+
+    tree() {
+        return tree(this);
     }
 };

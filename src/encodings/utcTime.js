@@ -1,15 +1,16 @@
-import { asBuffer } from 'buffer-io';
-import { Annotated } from 'structured-io';
-import integerSplit8 from '../integerSplit8.js';
+import X690Type from "../X690Type.js";
+import { X690TypedEncoding } from "./encodings.js";
 
-const dd = number => number.toString().padStart(2, '0');
+const textDecoder = new TextDecoder("utf8");
+const textEncoder = new TextEncoder("utf8");
 
-class DateEncoding extends Annotated {
-    explain(value) {
-        return value.toISOString();
+
+class UTCTimeEncoding extends X690TypedEncoding {
+    constructor() {
+        super(X690Type.universal(23));
     }
-    read(bufferReader) {
-        let text = asBuffer(bufferReader.readBytes()).toString("utf8");
+    decodeContent(content) {
+        let text = textDecoder.decode(content);
         let match = text.match(/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})Z$/);
         if (!match) throw new Error("Date not understood: " + text);
         let [, year, month, date, hour, minute, second] = match;
@@ -18,7 +19,7 @@ class DateEncoding extends Annotated {
         let isoString = `${fullYear}-${month}-${date}T${hour}:${minute}:${second}Z`;
         return new Date(isoString);
     }
-    write(bufferWriter, value) {
+    encodeContent(value) {
         let year = value.getUTCFullYear();
         if (year >= 2050 || year < 1950) throw new Error("UTCtime year not in range 1950-2049");
         let month = value.getUTCMonth() + 1;
@@ -30,8 +31,13 @@ class DateEncoding extends Annotated {
             .map(part => part.toString().padStart(2, '0'))
             .join("")
             + "Z";
-        bufferWriter.writeBytes(Buffer.from(dateString));
+        return textEncoder.encode(dateString);
+    }
+    canEncode(value) {
+        return value instanceof Date;
     }
 }
 
-export default () => new DateEncoding();
+
+
+export const utcTime = () => new UTCTimeEncoding();

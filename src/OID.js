@@ -1,10 +1,19 @@
 import oids from './oids.js';
 
-class OID {
+export class OID {
     constructor(id, name = oids.toName(id)) {
         this.id = id;
         this.name = name;
     }
+
+    getDescription() {
+        return `${this.id}: ${this.name}`;
+    }
+
+    getChildren() {
+        return [];
+    }
+
 
     equals(other) {
         return other.id == this.id;
@@ -14,4 +23,4 @@ class OID {
         return `${this.id}: ${this.name}`;
     }
 }
-export default OID;
+

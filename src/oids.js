@@ -1,5 +1,5 @@
 // From openssl:crypto/objects/objects.txt
-let objects = `
+let openSSLOIDs = `
 # CCITT was renamed to ITU-T quite some time ago
 0			: ITU-T			: itu-t
 !Alias ccitt itu-t
@@ -1716,12 +1716,28 @@ dstu4145le 2 9 : uacurve9 : DSTU curve 9
                             : AES-256-SIV  : aes-256-siv
 `;
 
+// From https://cabforum.org/resources/object-registry/
+let caBrowserOIDs = 
+`
+international-organizations 140 : ca-browser-forum
+ca-browser-forum 1 : certificate-policies
+certificate-policies 1 : extended-validation
+certificate-policies 2 : baseline-requirements
+baseline-requirements 1 : domain-validated
+baseline-requirements 2 : organization-validated
+baseline-requirements 3: individual-validated
+certificate-policies 3 : extended-validation-codesigning
+certificate-policies 4 : codesigning-requirements
+certificate-policies codesigning-requirements 1 : codesigning
+certificate-policies codesigning-requirements 2 : timestamping
+# ...more content omitted
+`;
+
+
+
 let oidToName = new Map();
 let nameToOID = new Map();
 
-let cname = null;
-
-let moduleName = null;
 
 function getOid([root, ...extra]) {
     if (!isNaN(root)) return [root, ...extra];
@@ -1730,37 +1746,48 @@ function getOid([root, ...extra]) {
     return null;
 }
 
-for (let line of objects.split("\n")) {
 
-    if (line.startsWith("!")) {
-        let [instruction, name, ...values] = line.split(" ");
-        if (instruction == "!Cname") {
-            cname = name;
-        }
-        if (instruction == "!Alias") {
-            let oid = getOid(values);
-            if (!oid) continue;
-            nameToOID.set(moduleName ? `${moduleName}_${name}` : name, oid);
-        }
-        if (instruction == "!module") {
-            moduleName = name;
-        }
-        if (instruction == "!global") {
-            moduleName = null;
-        }
-    } else if (!line.startsWith("#")) {
-        let [key, shortName, longName] = line.split(":").map(component => component.trim());
-        if (shortName || longName) {
-            let oidParts = getOid(key.split(" "));
-            if (!oidParts) continue;
-            nameToOID.set(moduleName ? `${moduleName}_${shortName}` : shortName, oidParts);
-            nameToOID.set(moduleName ? `${moduleName}_${longName}` : longName, oidParts);
-            if (cname) nameToOID.set(cname, oidParts);
-            oidToName.set(oidParts.join("."), longName || shortName);
-            cname = null;
+function importData(objects) {
+    let cname = null;
+
+    let moduleName = null;
+
+    for (let line of objects.split("\n")) {
+
+        if (line.startsWith("!")) {
+            let [instruction, name, ...values] = line.split(" ");
+            if (instruction == "!Cname") {
+                cname = name;
+            }
+            if (instruction == "!Alias") {
+                let oid = getOid(values);
+                if (!oid) continue;
+                nameToOID.set(moduleName ? `${moduleName}_${name}` : name, oid);
+            }
+            if (instruction == "!module") {
+                moduleName = name;
+            }
+            if (instruction == "!global") {
+                moduleName = null;
+            }
+        } else if (!line.startsWith("#")) {
+            let [key, shortName, longName] = line.split(":").map(component => component.trim());
+            if (shortName || longName) {
+                let oidParts = getOid(key.split(" "));
+                if (!oidParts) continue;
+                nameToOID.set(moduleName ? `${moduleName}_${shortName}` : shortName, oidParts);
+                nameToOID.set(moduleName ? `${moduleName}_${longName}` : longName, oidParts);
+                if (cname) nameToOID.set(cname, oidParts);
+                oidToName.set(oidParts.join("."), longName || shortName);
+                cname = null;
+            }
         }
     }
 }
+
+importData(openSSLOIDs);
+
+importData(caBrowserOIDs);
 
 export default {
     toName: oid => oidToName.get(oid),
