@@ -11,20 +11,41 @@ import { nullData } from './encodings/null.js';
 import { oid } from './encodings/oid.js';
 import { ia5String, printableString, t61String, utf8string } from './encodings/strings.js';
 import { utcTime } from './encodings/utcTime.js';
+import * as hex from "@dwbinns/base/hex";
 
 
 const any = choice(boolean(), bigInt(), oid(), utf8string(), printableString(), ia5String(), t61String(), utcTime());
 
-const assert = required => {
-    if (!required) throw new Error("Requirement failed");
+const assert = (required, message) => {
+    if (!required) throw new Error(`Requirement failed: ${message}`);
 }
 
 export class DataValue {
     constructor(type, content) {
         this.type = type;
         if (type.constructed) assert(content instanceof Array && content.every(c => c instanceof DataValue));
-        else assert(content instanceof Uint8Array);
+        else assert(content instanceof Uint8Array, "content is primitive uint8array or constructed array");
         this.content = content;
+    }
+
+    toJSON() {
+        let type = this.type.serial();
+        if (this.type.constructed) return { type, content: this.content };
+        if (any.canDecode(this)) {
+            let value = any.decode(this);
+            return { type, decode: value.toJSON ? value.toJSON() : `${value}` };
+        }
+        return { type, bytes: hex.encode(this.content) };
+    }
+
+    static fromJSON(object) {
+        let type = X690Type.fromSerial(object.type);
+        if (object.content) return new DataValue(type, object.content.map(item => DataValue.fromJSON(item)));
+
+        if (object.decode !== undefined) {
+            return any.fromSerial(type, object.decode);
+        }
+        return new DataValue(type, hex.decode(object.bytes));
     }
 
     decode() {

@@ -69,6 +69,16 @@ class Section {
     getDescription() {
         return this.type;
     }
+
+    toJSON() {
+        return {
+            type: this.type,
+            content: this.getContent(),
+        };
+
+    }
+
+
 }
 
 export class Pem {
@@ -124,10 +134,19 @@ export class Pem {
         return this.sections.map(part => part.write()).join("");
     }
 
+    static fromJSON(object) {
+        return new Pem(...object.map(({ type, content }) => new Section(type, DataValue.fromJSON(content).getBytes())));
+    }
+
 
     explain() {
         this.sections.forEach(section => section.explain());
     }
+    toJSON() {
+        return this.sections;
+    }
+
+
 
     tree() {
         return tree(this);

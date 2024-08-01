@@ -16,8 +16,9 @@ async function main(inputFormat, input, outputFormat) {
         console.log(tree(content));
     } else if (inputFormat == 'pem') {
         let pem = Pem.read(await readFile(input, { encoding: 'utf8' }));
-        if (outputFormat == "annotate") {
-            pem.explain();
+        if (outputFormat == "json") {
+            let json = JSON.stringify(pem, null, 4);
+            console.log(json);
         } else {
             console.log(tree(pem));
         }

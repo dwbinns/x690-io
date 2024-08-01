@@ -26,6 +26,13 @@ class Choice extends X690Encoding {
         if (!encoder) throw new Error("No option found for: " + value);
         return encoder.encode(value);
     }
+
+    fromSerial(type, value) {
+        let encoder = this.options.find(option => option.type?.equals(type));
+        if (!encoder) throw new Error("No option found for: " + value);
+        return encoder.encode(value);
+    }
+
     canEncode(value) {
         return !!this.findEncodeOption(value);
     }

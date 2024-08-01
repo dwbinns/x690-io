@@ -6,12 +6,12 @@ import { X690TypedEncoding } from "./encodings.js";
 
 class OIDEncoding extends X690TypedEncoding {
     constructor() {
-        super(X690Type.universal(6));
+        super(X690Type.universal(6), OID);
     }
 
     decodeContent(content) {
         let bufferReader = new BufferReader(content);
-        
+
         let components = [];
         while (!bufferReader.eof()) {
             components.push(variableWidthNumber.read(bufferReader));
@@ -35,9 +35,7 @@ class OIDEncoding extends X690TypedEncoding {
 
         return bufferWriter.getBuffer();
     }
-    canEncode(value) {
-        return value instanceof OID;
-    }
+
 }
 
 export const oid = () => new OIDEncoding();

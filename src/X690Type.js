@@ -24,7 +24,9 @@ const universalTagNames = new Map([
 
 class X690Type {
     constructor(tagClass, tag, constructed) {
-        Object.assign(this, { tagClass, tag, constructed });
+        this.tagClass = tagClass;
+        this.tag = tag;
+        this.constructed = constructed;
     }
     toString() {
         let tagName = this.tag;
@@ -32,6 +34,15 @@ class X690Type {
             tagName = tagName + ' (' + universalTagNames.get(this.tag) + ')';
         }
         return `${tagClasses[this.tagClass]} ${tagName} ${this.constructed ? "constructed" : "primitive"}`;
+    }
+    serial() {
+        return `${tagClasses[this.tagClass][0]}${this.tag}${this.constructed ? "C" : "P"}`;
+    }
+    static fromSerial(string) {
+        let tagClass = 'UACP'.indexOf(string[0]);
+        let constructed = 'C' == string.at(-1);
+        let tag = Number(string.slice(1, -1));
+        return new X690Type(tagClass, tag, constructed);
     }
     static universal(code, constructed = false) {
         return new X690Type(0, code, constructed);

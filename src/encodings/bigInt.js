@@ -12,6 +12,7 @@ class BigIntEncoding extends X690TypedEncoding {
         return bytesToBigint(content);
     }
     encodeContent(value) {
+        if (typeof value == "string") value = BigInt(value);
         return bigintToBytes(value);
         
     }

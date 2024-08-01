@@ -61,12 +61,18 @@ export function wrap(targetClass, name, ...args) {
 }
 
 export class X690TypedEncoding extends X690Encoding {
-    constructor(type) {
+    constructor(x690Type, valueClass) {
         super();
-        this.type = type;
+        this.type = x690Type;
+        this.valueClass = valueClass;
+    }
+
+    canEncode(value) {
+        return value instanceof this.valueClass;
     }
 
     encode(value) {
+        if (this.valueClass && typeof value == "string") value = new this.valueClass(value);
         return new DataValue(this.type, this.encodeContent(value));
     }
 

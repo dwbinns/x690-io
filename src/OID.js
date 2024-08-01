@@ -18,7 +18,9 @@ export class OID {
     equals(other) {
         return other.id == this.id;
     }
-
+    toJSON() {
+        return this.id;
+    }
     toString() {
         return `${this.id}: ${this.name}`;
     }
