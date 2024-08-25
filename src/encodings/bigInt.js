@@ -1,4 +1,4 @@
-import { bigintToBytes, bytesToBigint } from "../bigIntBytes.js";
+import { signedBigintToBytes, bytesToSignedBigint } from "../bigIntBytes.js";
 import X690Type from "../X690Type.js";
 import { X690TypedEncoding } from "./encodings.js";
 
@@ -9,11 +9,11 @@ class BigIntEncoding extends X690TypedEncoding {
         super(X690Type.universal(2));
     }
     decodeContent(content) {
-        return bytesToBigint(content);
+        return bytesToSignedBigint(content);
     }
     encodeContent(value) {
         if (typeof value == "string") value = BigInt(value);
-        return bigintToBytes(value);
+        return signedBigintToBytes(value);
         
     }
     canEncode(value) {

@@ -1,9 +1,10 @@
 import oids from './oids.js';
 
 export class OID {
-    constructor(id, name = oids.toName(id)) {
+    constructor(id, name = oids.toName(id), short = oids.toShortName(id)) {
         this.id = id;
         this.name = name;
+        this.short = short;
     }
 
     getDescription() {
@@ -14,6 +15,9 @@ export class OID {
         return [];
     }
 
+    is(id) {
+        return this.id == id;
+    }
 
     equals(other) {
         return other.id == this.id;

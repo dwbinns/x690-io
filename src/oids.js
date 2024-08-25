@@ -1737,6 +1737,7 @@ certificate-policies codesigning-requirements 2 : timestamping
 
 let oidToName = new Map();
 let nameToOID = new Map();
+let oidToShortName = new Map();
 
 
 function getOid([root, ...extra]) {
@@ -1779,6 +1780,7 @@ function importData(objects) {
                 nameToOID.set(moduleName ? `${moduleName}_${longName}` : longName, oidParts);
                 if (cname) nameToOID.set(cname, oidParts);
                 oidToName.set(oidParts.join("."), longName || shortName);
+                oidToShortName.set(oidParts.join("."), shortName || longName);
                 cname = null;
             }
         }
@@ -1791,5 +1793,6 @@ importData(caBrowserOIDs);
 
 export default {
     toName: oid => oidToName.get(oid),
+    toShortName: oid => oidToShortName.get(oid),
     toOID: name => nameToOID.get(name)
 };

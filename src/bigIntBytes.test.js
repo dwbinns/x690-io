@@ -1,4 +1,4 @@
-import { bigintToBytes, bytesToBigint } from "./bigIntBytes.js";
+import { signedBigintToBytes, bytesToSignedBigint } from "./bigIntBytes.js";
 import { deepEqual, equal } from "node:assert/strict";
 import { test } from "node:test";
 
@@ -15,6 +15,6 @@ const tests = [
 ];
 
 for (let [bigint, bytes] of tests) {
-    test(`check: ${bigint}->bytes`, () => deepEqual(bigintToBytes(bigint), new Uint8Array(bytes)));
-    test(`check: bytes->${bigint}`, () => equal(bytesToBigint(new Uint8Array(bytes)), bigint));
+    test(`check: ${bigint}->bytes`, () => deepEqual(signedBigintToBytes(bigint), new Uint8Array(bytes)));
+    test(`check: bytes->${bigint}`, () => equal(bytesToSignedBigint(new Uint8Array(bytes)), bigint));
 }

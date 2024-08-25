@@ -57,7 +57,9 @@ function namedClass(superClass, name) {
 
 export function wrap(targetClass, name, ...args) {
     let subClass = namedClass(targetClass, name);
-    return new subClass(...args);
+    let result = new subClass(...args);
+    result.location = getLocation(3);
+    return result;
 }
 
 export class X690TypedEncoding extends X690Encoding {
@@ -124,3 +126,4 @@ export class X690WrappedEncoding extends X690Encoding {
         return this.encoding.canEncode(value);
     }
 }
+

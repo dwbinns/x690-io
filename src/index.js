@@ -1,11 +1,12 @@
 // See x690
 // https://www.itu.int/ITU-T/studygroups/com17/languages/X.690-0207.pdf
 
+
 export { DataValue } from "./DataValue.js";
 export { Pem } from "./Pem.js";
 export { OID } from "./OID.js";
 export { encoding, name } from "./encodings/encodings.js";
-export { instance } from "./encodings/instance.js";
+export { encode, decode, instance } from "./encodings/instance.js";
 export { explicit } from "./encodings/explicit.js";
 export { field } from "./encodings/field.js";
 export { implicit } from "./encodings/implicit.js";
@@ -20,7 +21,9 @@ export { octetString } from "./encodings/bytes.js";
 export { integer } from "./encodings/number.js";
 export { boolean } from "./encodings/boolean.js";
 export { utcTime } from "./encodings/utcTime.js";
+export { generalizedTime } from "./encodings/generalizedTime.js";
 export { bitString } from "./encodings/bitString.js";
+export { flags } from "./encodings/flags.js";
 export { nullData } from "./encodings/null.js";
 
 

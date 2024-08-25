@@ -12,9 +12,10 @@ import { oid } from './encodings/oid.js';
 import { ia5String, printableString, t61String, utf8string } from './encodings/strings.js';
 import { utcTime } from './encodings/utcTime.js';
 import * as hex from "@dwbinns/base/hex";
+import { bitString } from './encodings/bitString.js';
 
 
-const any = choice(boolean(), bigInt(), oid(), utf8string(), printableString(), ia5String(), t61String(), utcTime());
+const any = choice(bitString(), boolean(), bigInt(), oid(), utf8string(), printableString(), ia5String(), t61String(), utcTime(), nullData());
 
 const assert = (required, message) => {
     if (!required) throw new Error(`Requirement failed: ${message}`);
@@ -33,6 +34,9 @@ export class DataValue {
         if (this.type.constructed) return { type, content: this.content };
         if (any.canDecode(this)) {
             let value = any.decode(this);
+            if (value instanceof Uint8Array) {
+                value = hex.encode(value);
+            }
             return { type, decode: value.toJSON ? value.toJSON() : `${value}` };
         }
         return { type, bytes: hex.encode(this.content) };
@@ -50,11 +54,10 @@ export class DataValue {
 
     decode() {
         if (any.canDecode(this)) return any.decode(this);
-        if (nullData().canDecode(this.type)) return "<null>";
-        return "";
     }
 
     static read(reader) {
+        if (reader instanceof ArrayBuffer) reader = new BufferReader(new Uint8Array(reader));
         if (reader instanceof Uint8Array) reader = new BufferReader(reader);
         let start = reader.index;
         let type = X690Type.read(reader);
@@ -102,10 +105,19 @@ export class DataValue {
 
     getDescription() {
         let decoded = this.decode();
-        let firstLine = blue(this.type.toString()) + " " + green(decoded);
-        let secondLine = decoded == "" && !this.type.constructed ? bytesFormat(this.content) : "";
-        if (secondLine) return `${firstLine}\n${secondLine}`;
-        return firstLine;
+        if (decoded === undefined) {
+            if (this.content instanceof Array) {
+                return blue(this.type.toString());
+            }
+            return blue(this.type.toString()) + "\n" + bytesFormat(this.content);
+        }
+        if (decoded instanceof Uint8Array) {
+            return blue(this.type.toString()) + "\n" + bytesFormat(decoded);
+        }
+        if (decoded === null) {
+            return blue(this.type.toString()) + " <null>";
+        }
+        return blue(this.type.toString()) + " " + decoded;
     }
 
     getChildren() {

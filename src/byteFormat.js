@@ -1,4 +1,5 @@
 import * as hex from "@dwbinns/base/hex";
+import { grey } from "@dwbinns/terminal/colour";
 
 export function byteSplit(bytes, splitSize) {
     let results = [];
@@ -12,10 +13,15 @@ export function byteSplit(bytes, splitSize) {
 
 export function byteHexSplit(bytes, ...splits) {
     if (!splits.length) return hex.encode(bytes);
-    let [[length, separator], ...remaining] = splits;
-    return byteSplit(bytes, length).map(section => byteHexSplit(section, ...remaining)).join(separator);
+    let [[length, separator, counter], ...remaining] = splits;
+    return byteSplit(bytes, length)
+        .map((section, index) =>
+            grey(counter ? (index * length).toString(16).padStart(4, '0') + ": " : "")
+            + byteHexSplit(section, ...remaining)
+        )
+        .join(separator);
 }
 
 export function bytesFormat(bytes) {
-    return byteHexSplit(bytes, [32, "\n"], [8, "  "], [2, " "]);
+    return byteHexSplit(bytes, [32, "\n", true], [8, "  "], [2, " "]);
 }

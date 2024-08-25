@@ -21,11 +21,6 @@ class Section {
     static encodeContent(value) {
         let dataValue = instance(value.constructor).encode(value);
         const typeName = value.constructor[name];
-        // let typeName = Array.isArray(types)
-        //     ? types.filter(([, type]) => type == value.constructor).map(([name]) => name).pop()
-        //     : types;
-        // let content = write(value);
-
         return new Section(typeName, dataValue.getBytes());
     }
 
@@ -34,22 +29,9 @@ class Section {
     }
 
 
-    // getType(types) {
-    //     let type = Array.isArray(types)
-    //     ? types.filter(([name]) => name == this.type).map(([, type]) => type).pop()
-    //     : types;
-    //     if (!type) throw new Error(`Unknown type: ${type}`);
-    //     return type;
-    // }
-
-    decodeContent(contentEncoding) {
-        return contentEncoding.decode(this.getContent());
+    decodeContent(contentType) {
+        return instance(contentType).decode(this.getContent());
     }
-
-    // explain() {
-    //     console.log(this.type);
-    //     explain(this.content, instance(X690Element));
-    // }
 
     write() {
 
@@ -93,17 +75,35 @@ export class Pem {
         this.sections.push(Section.encodeContent(value));
     }
 
-    addSection(name, data) {
-        //console.log("write section", name, data);
+    addSection(name, content) {
+        if (content instanceof ArrayBuffer) content = new Uint8Array(content);
+        if (content instanceof DataValue) content = content.getBytes();
+        if (!(content instanceof Uint8Array)) throw new Error("Content not Uint8Array");
+        this.sections.push(new Section(name, content));
+    }
 
-        this.sections.push(new Section(name, data.getBytes()));
+    findSections(contentType) {
+        return this.sections.filter(({type}) => type == contentType[name]);
+    }
+
+    findSection(contentType) {
+        return this.findSections(contentType).at(0);
+    }
+
+    decodeSections(contentType) {
+        return this.findSections(contentType).map(section => section.decodeContent(contentType));
+    }
+
+    decodeSection(contentType) {
+        return this.findSection(contentType).decodeContent(contentType);
     }
 
     static read(text) {
+        if (text instanceof Uint8Array) text = new TextDecoder().decode(text);
         let results = [];
         let base64Lines = null;
         let type = null;
-        for (let line of text.split("\n")) {
+        for (let line of text.split(/\r|\n|\r\n/)) {
             let match = /^-----(BEGIN|END) (.*)-----$/.exec(line.trim());
             if (match && match[1] == "END" && match[2] == type) {
                 let data = base64.decode(base64Lines.join(""));

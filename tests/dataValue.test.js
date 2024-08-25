@@ -90,7 +90,7 @@ let csrContent = [
                                 },
                                 {
                                     "type": "U3P",
-                                    "bytes": "00043244555e7ad1fc48a4708e277e6cf3a6ab1da383e9d40d2c67420373667b98fbac682be3edde4ec4aa763cab6f15b3473d68eb1c63ae4af02c7da66d4cf02aa9"
+                                    "decode": "043244555e7ad1fc48a4708e277e6cf3a6ab1da383e9d40d2c67420373667b98fbac682be3edde4ec4aa763cab6f15b3473d68eb1c63ae4af02c7da66d4cf02aa9"
                                 }
                             ]
                         },
@@ -144,24 +144,25 @@ let csrContent = [
                 },
                 {
                     "type": "U3P",
-                    "bytes": "003045022064868a6a96b3e72ce549dba28e2123282249128224078683a024aa9c3cc68662022100cf9a9513992f8268331b2548a9c5c4b54c8f83ab090453cd8b782c9ed11f9b9c"
+                    "decode": "3045022064868a6a96b3e72ce549dba28e2123282249128224078683a024aa9c3cc68662022100cf9a9513992f8268331b2548a9c5c4b54c8f83ab090453cd8b782c9ed11f9b9c"
                 }
             ]
         }
     }
 ]
 
+await test("dataValue", async () => {
+    await test('encode pem', () => {
+        assert.strictEqual(
+            Pem.fromJSON(csrContent).write().trim(),
+            exampleCSR.trim(),
+        )
+    });
 
-test('encode pem', () => {
-    assert.strictEqual(
-        Pem.fromJSON(csrContent).write().trim(),
-        exampleCSR.trim(),
-    )
-});
-
-test('decode pem', () => {
-    assert.deepStrictEqual(
-        JSON.parse(JSON.stringify(Pem.read(exampleCSR))),
-        csrContent,
-    )
+    await test('decode pem', () => {
+        assert.deepStrictEqual(
+            JSON.parse(JSON.stringify(Pem.read(exampleCSR))),
+            csrContent,
+        )
+    });
 });

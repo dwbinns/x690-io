@@ -1,16 +1,8 @@
-import { DataValue } from "../DataValue.js";
+import { concatBytes } from "buffer-io";
 import X690Type from "../X690Type.js";
 import { X690TypedEncoding } from "./encodings.js";
+import * as hex from "@dwbinns/base/hex";
 
-const concatBytes = (...arrays) => {
-    let result = new Uint8Array(arrays.reduce((length, array) => length + array.length, 0));
-    let index = 0;
-    for (let array of arrays) {
-        result.set(array, index);
-        index += array.length;
-    }
-    return result;
-};
 
 class BitStringEncoding extends X690TypedEncoding {
     constructor(type) {
@@ -20,6 +12,7 @@ class BitStringEncoding extends X690TypedEncoding {
         return content.slice(1);
     }
     encodeContent(value) {
+        if (typeof value == "string") value = hex.decode(value);
         return concatBytes([0], value);
     }
     canEncode(value) {

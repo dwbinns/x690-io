@@ -10,10 +10,11 @@ class BytesEncoding extends X690TypedEncoding {
         return content;
     }
     encodeContent(value) {
+        if (value instanceof ArrayBuffer) value = new Uint8Array(value);
         return value;
     }
     canEncode(value) {
-        return value instanceof Uint8Array;
+        return value instanceof Uint8Array || value instanceof ArrayBuffer;
     }
 }
 

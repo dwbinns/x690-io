@@ -24,7 +24,8 @@ class ExampleObject {
     static [x690.encoding] = x690.sequence(
         x690.field('nested', x690.instance(NestedObject)),
         x690.field('bytes', x690.octetString()),
-        x690.field('bits', x690.bitString())
+        x690.field('bits', x690.bitString()),
+        x690.field('flags', x690.flags(["a", "b", "c"])),
     );
 
     static [x690.name] = "EXAMPLE OBJECT";
@@ -40,28 +41,36 @@ let testObject = new ExampleObject({
         text: "hello",
         missing: undefined,
     }),
+    flags: {
+        a: false,
+        b: true,
+        c: true,
+    }
 });
 
 
 const encodedPem = `
 -----BEGIN EXAMPLE OBJECT-----
-MBswDgYCKQECAQQMBWhlbGxvBAMBAgMDBAAEBQY=
+MB8wDgYCKQECAQQMBWhlbGxvBAMBAgMDBAAEBQYDAgBg
 -----END EXAMPLE OBJECT-----
 `;
 
 
-test('encode pem', () => {
-    let output = new x690.Pem();
-    output.encodeSection(testObject);
+await test("encodings", async () => {
+    await test('encode pem', () => {
+        let output = new x690.Pem();
+        output.encodeSection(testObject);
 
-    let pemText = output.write();
+        let pemText = output.write();
 
-    assert.equal(pemText.trim(), encodedPem.trim());
-});
+        assert.equal(pemText.trim(), encodedPem.trim());
+    });
 
-test('decode pem', () => {
-    assert.deepStrictEqual(
-        x690.Pem.read(encodedPem).sections[0].decodeContent(x690.instance(ExampleObject)),
-        testObject,
-    );
+    await test('decode pem', () => {
+        assert.deepStrictEqual(
+            x690.Pem.read(encodedPem).sections[0].decodeContent(ExampleObject),
+            testObject,
+        );
+    });
+
 });

@@ -1,4 +1,4 @@
-export function bigintToBytes(value) {
+export function signedBigintToBytes(value) {
     let bytes = [];
     while (true) {
         bytes.unshift(Number(value & 0xffn));
@@ -8,7 +8,7 @@ export function bigintToBytes(value) {
     return new Uint8Array(bytes);
 }
 
-export function bytesToBigint(bytes) {
+export function bytesToSignedBigint(bytes) {
     return [...bytes]
         .reduce(
             (result, byte) => result * 256n + BigInt(byte),
