@@ -1794,5 +1794,5 @@ importData(caBrowserOIDs);
 export default {
     toName: oid => oidToName.get(oid),
     toShortName: oid => oidToShortName.get(oid),
-    toOID: name => nameToOID.get(name)
+    toOID: name => nameToOID.get(name).join(".")
 };

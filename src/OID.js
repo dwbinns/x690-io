@@ -28,5 +28,9 @@ export class OID {
     toString() {
         return `${this.id}: ${this.name}`;
     }
+
+    static fromName(name) {
+        return new OID(oids.toOID(name));
+    }
 }
 
