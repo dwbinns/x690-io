@@ -19,5 +19,9 @@
   "bin": "cli.js",
   "workspaces": [
     "deps/*"
+  ],
+  "files": [
+    "src",
+    "tests"
   ]
 }
